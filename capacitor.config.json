@@ -1,0 +1,6 @@
+{
+  "appId": "com.optionsradar.ar",
+  "appName": "رادار الخيارات الأمريكية",
+  "webDir": "dist",
+  "server": { "androidScheme": "https" }
+}

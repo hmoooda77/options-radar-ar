@@ -1,0 +1,11 @@
+{
+  "name": "رادار الخيارات الأمريكية",
+  "short_name": "رادار الخيارات",
+  "description": "لوحة عربية لمراقبة سلسلة الخيارات الأمريكية",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080d18",
+  "theme_color": "#0b1220"
+}
