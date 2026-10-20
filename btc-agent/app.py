@@ -27,13 +27,13 @@ class SimState:
     """In-memory paper-trading state."""
 
     def __init__(self):
-        self.lock = threading.Lock()
-        self.cash = INIT_CASH
-        self.btc = 0.0
-        self.trades = []
-        self.sma5_history = deque(maxlen=25)
-        self.sma20_history = deque(maxlen=25)
-        self.prev_sma5 = None
+ self.lock = threading.Lock()
+ self.cash = INIT_CASH
+ self.btc = 0.0
+ self.trades = []
+ self.sma5_history = deque(maxlen=25)
+ self.sma20_history = deque(maxlen=25)
+ self.prev_sma5 = None
         self.prev_sma20 = None
 
     def _sma(self, data, window):
