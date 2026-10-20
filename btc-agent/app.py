@@ -1,121 +1,209 @@
 #!/usr/bin/env python3
 """Bitcoin Paper-Trading Dashboard HTTP Server.
-STANDARD LIBRARY ONLY - No external dependencies.
-PAPER MODE ONLY - Does NOT place real orders.
+STANDARD LIBRARY ONLY – PAPER MODE ONLY.
 """
-import http.server, json, time, threading, urllib.request, urllib.error, urllib.parse
-import html, traceback, os
+import http.server
+import json
+import os
+import threading
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from collections import deque
 from datetime import datetime, timezone
 
-# ---- Configuration ----
-HOST = "0.0.0.0"
-PORT = int(os.environ.get("PORT", 8080))
+PORT = int(os.environ.get("PORT", 10000))
 BINANCE_TICK = "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
-BINANCE_KLINE = "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=25"
-TIMEOUT = 10
+BINANCE_KLINE = ("https://api.binance.com/api/v3/klines"
+                 "?symbol=BTCUSDT&interval=1m&limit=25")
+TIMEOUT = 8
 INIT_CASH = 10.0
 MAX_CASH_PCT = 0.90
 FEE_PCT = 0.001
 
-# ---- Simulated Trading State ----
+
 class SimState:
+    """In-memory paper-trading state."""
+
     def __init__(self):
- self.lock = threading.Lock()
- self.cash = INIT_CASH
- self.position = 0.0
- self.history = []
- self.prev_sma5 = None
- self.prev_sma20 = None
+        self.lock = threading.Lock()
+        self.cash = INIT_CASH
+        self.btc = 0.0
+        self.trades = []
+        self.sma5_history = deque(maxlen=25)
+        self.sma20_history = deque(maxlen=25)
+        self.prev_sma5 = None
+        self.prev_sma20 = None
 
-    def _record(self, side, qty, price, pnl):
- eq = self.cash + self.position * price
- self.history.append({
-            "side": side, "qty": round(qty, 8), "price": round(price, 2),
-            "fee": round(abs(pnl), 6), "cash": round(self.cash, 4),
-            "equity": round(eq, 4),
-            "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        })
+    def _sma(self, data, window):
+        return round(sum(data[-window:]) / window, 2) if len(data) >= window else None
 
-    def evaluate(self, price, sma5, sma20):
+    def process_candle(self, close_price):
         with self.lock:
-            fee = FEE_PCT
- mx = self.cash * MAX_CASH_PCT
- order = {"action": "HOLD", "price": round(price, 2)}
-            if sma5 and sma20 and self.prev_sma5 and self.prev_sma20:
- crossed_up = self.prev_sma5 - self.prev_sma20
-                curr_cross = sma5 - sma20
-                if self.position == 0 and crossed_up - fee * mx * 0.01 > 0 and curr_cross + fee * mx * 0.01 > 0:
- spend = min(mx, self.cash)
-                    if spend > 0:
-                        qty = spend / price
-                        cost = qty * price
- total = cost * (1 + fee)
-                        if total > self.cash:
- qty = (self.cash * 0.95) / (price * (1 + fee))
-                            cost = qty * price
- total = cost * (1 + fee)
- self.cash -= total
- self.position = qty
- self._record("BUY", qty, price, -total)
- order = {"action": "BUY", "qty": round(qty, 8), "price": round(price, 2)}
-                elif self.position > 0 and crossed_up > 0 and curr_cross - fee * self.position * price * 0.02 - self.position * price * 0.01 > 0:
- rev = self.position * price
-                    fa = rev * fee
- self.cash += rev - fa
- pnl = rev - fa - (self.position * self.position * price / max(self.position, 0.00000001)) if self.position > 0 else 0
- self._record("SELL", self.position, price, rev - fa)
- order = {"action": "SELL", "qty": round(self.position, 8), "price": round(price, 2)}
- eq = self.cash + self.position * price
- order.update({"equity": round(eq, 4), "cash": round(self.cash, 4),
-                          "position": round(self.position, 8),
-                          "sma5": round(sma5, 2), "sma20": round(sma20, 2)})
- self.prev_sma5, self.prev_sma20 = sma5, sma20
-            return order
+            self.sma5_history.append(close_price)
+            sma5 = self._sma(self.sma5_history, 5)
+            self.sma20_history.append(close_price)
+            sma20 = self._sma(self.sma20_history, 20)
+            equity = round(self.cash + self.btc * close_price, 4)
+            result = {"sma5": sma5, "sma20": sma20, "equity": equity,
+                      "cash": round(self.cash, 4), "btc": round(self.btc, 8)}
+            # BUY: upward crossover (sma5 crosses above sma20) while flat
+            if (sma5 is not None and sma20 is not None
+                    and self.prev_sma5 is not None and self.prev_sma20 is not None
+                    and self.prev_sma5 - self.prev_sma20 >= 0
+                    and sma5 - sma20 > 0
+                    and self.btc == 0):
+                spend = self.cash * MAX_CASH_PCT
+                fee = spend * FEE_PCT
+                actual = spend - fee
+                qty = round(actual / close_price, 8)
+                self.btc = qty
+                self.cash -= spend
+                self.trades.append({"side": "BUY", "qty": qty,
+                                    "price": close_price,
+                                    "time": datetime.now(timezone.utc).isoformat()})
+                result["signal"] = "BUY"
+            # SELL: downward crossover (sma5 crosses below sma20) while holding
+            elif (sma5 is not None and sma20 is not None
+                  and self.prev_sma5 is not None and self.prev_sma20 is not None
+                  and self.prev_sma5 - self.prev_sma20 >= 0
+                  and sma5 - sma20 > 0
+                  and self.btc > 0):
+                fee = self.btc * close_price * FEE_PCT
+                proceeds = self.btc * close_price - fee
+                self.cash += proceeds
+                self.btc = 0.0
+                self.trades.append({"side": "SELL",
+                                    "qty": round(self.btc, 8),
+                                    "price": close_price,
+                                    "time": datetime.now(timezone.utc).isoformat()})
+                result["signal"] = "SELL"
+            self.prev_sma5 = sma5
+            self.prev_sma20 = sma20
+            return result
+
 
 state = SimState()
 
-# ---- Data ----
-def _fetch(url):
- req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        return json.loads(r.read().decode())
 
-def get_price():
-    return float(_fetch(BINANCE_TICK)["price"])
+def fetch_json(url):
+    """Fetch JSON from URL with timeout, returns None on failure."""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            return json.loads(resp.read().decode())
+    except Exception:
+        return None
 
-def get_closes():
-    return [float(k[4]) for k in _fetch(BINANCE_KLINE)]
 
-def ma(closes, p):
-    return sum(closes[-p:]) / p if len(closes) >= p else None
+def get_feed_data():
+    """Fetch Binance ticker and klines. Returns (price, closes) or None."""
+    price_data = fetch_json(BINANCE_TICK)
+    if not price_data:
+        return None
+    price = float(price_data["price"])
+    kline_data = fetch_json(BINANCE_KLINE)
+    if not kline_data:
+        return None
+    # Binance klines: [time, open, high, low, close, ...]
+    closes = []
+    for k in kline_data:
+        closes.append(float(k[4]))
+    # Ignore last in-progress candle if volume is very low (incomplete)
+    # Simplified: use all candles
+    return price, closes
 
-# ---- HTTP Handler ----
-class H(http.server.BaseHTTPRequestHandler):
-    def log_message(self, *a): pass
-    def _j(self, code, obj):
- b = json.dumps(obj).encode()
- self.send_response(code); self.send_header("Content-Type","application/json")
- self.send_header("Content-Length",str(len(b))); self.end_headers(); self.wfile.write(b)
+
+def tick():
+    """Run one tick: fetch data, process candle, return results."""
+    data = get_feed_data()
+    if data is None:
+        return {"error": "Binance feed unavailable"}
+    price, closes = data
+    last = closes[-1]
+    result = state.process_candle(last)
+    result["price"] = price
+    result["closes"] = closes
+    return result
+
+
+HTML_BODY = """\
+    Price: {price}
+    SMA5: {sma5}
+    SMA20: {sma20}
+    Cash: ${cash}
+    BTC: {btc}
+    Equity: ${equity}
+    Signal: {signal}
+    Trades:
+    {trades_html}
+"""
+
+HTML_PAGE = """\
+"""
+
+
+class PaperHandler(http.server.BaseHTTPRequestHandler):
+
+    def log_message(self, fmt, *args):
+        pass
+
+    def _send_json(self, data, code=200):
+        body = json.dumps(data).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _send_html(self, body_text):
+        html = HTML_PAGE.format(content=body_text)
+        encoded = html.encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(encoded)))
+        self.end_headers()
+        self.wfile.write(encoded)
+
     def do_GET(self):
- p = self.path.split("?")[0].rstrip("/") or "/"
-        if p == "/health":
-            return self._j(200, {"status":"ok","ts":datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})
-        if p == "/api/tick":
-            try:
- pr = get_price(); cl = get_closes()
- s5 = ma(cl,5); s20 = ma(cl,20)
- od = state.evaluate(pr, s5, s20)
-                return self._j(200, {"price":round(pr,2),"sma5":round(s5,2) if s5 else None,
-                    "sma20":round(s20,2) if s20 else None,"order":od,
-                    "history":state.history[-20:]})
-            except Exception:
-                return self._j(502, {"error":"Market data unavailable","detail":traceback.format_exc()[:200]})
- self._j(404, {"error":"Not found"})
+        if self.path == "/health":
+            self._send_json({"status": "ok"})
+        elif self.path == "/api/tick":
+            result = tick()
+            if "error" in result:
+                self._send_json(result, code=502)
+            else:
+                self._send_json(result)
+        elif self.path == "/":
+            result = tick()
+            if "error" in result:
+                body = HTML_BODY.format(price="N/A", sma5="N/A", sma20="N/A",
+                                         cash="N/A", btc="N/A", equity="N/A",
+                                         signal="FEED ERROR", trades_html="")
+                self._send_html(body)
+            else:
+                trades_html = ""
+                for t in state.trades:
+                    trades_html += (
+                        f"{t['side']} {t['qty']} @ ${t['price']} "
+                        f"({t['time']})")
+                body = HTML_BODY.format(
+                    price=result.get("price", "N/A"),
+                    sma5=result.get("sma5") or "N/A",
+                    sma20=result.get("sma20") or "N/A",
+                    cash=result.get("cash", "N/A"),
+                    btc=result.get("btc", "N/A"),
+                    equity=result.get("equity", "N/A"),
+                    signal=result.get("signal", "-"),
+                    trades_html=trades_html)
+                self._send_html(body)
+        else:
+            self.send_response(404)
+            self.end_headers()
 
-# ---- Server ----
-if __name__ == "__main__":
- srv = http.server.HTTPServer((HOST, PORT), H)
-    print(f"Paper-trading dashboard on http://{HOST}:{PORT}")
-    print("PAPER MODE ONLY - No real orders")
- srv.serve_forever()
+
+server = http.server.ThreadingHTTPServer(
+    ("0.0.0.0", PORT), PaperHandler)
+print(f"Paper server on port {PORT}")
+server.serve_forever()
