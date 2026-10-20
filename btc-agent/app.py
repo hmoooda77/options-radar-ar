@@ -158,49 +158,49 @@ class PaperHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _send_html(self, body_text):
-        html = HTML_PAGE.format(content=body_text)
-        encoded = html.encode()
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(encoded)))
-        self.end_headers()
-        self.wfile.write(encoded)
+ html = HTML_PAGE.format(content=body_text)
+ encoded = html.encode()
+ self.send_response(200)
+ self.send_header("Content-Type", "text/html; charset=utf-8")
+ self.send_header("Content-Length", str(len(encoded)))
+ self.end_headers()
+ self.wfile.write(encoded)
 
     def do_GET(self):
         if self.path == "/health":
-            self._send_json({"status": "ok"})
+ self._send_json({"status": "ok"})
         elif self.path == "/api/tick":
-            result = tick()
+ result = tick()
             if "error" in result:
-                self._send_json(result, code=502)
+ self._send_json(result, code=502)
             else:
-                self._send_json(result)
+ self._send_json(result)
         elif self.path == "/":
-            result = tick()
+ result = tick()
             if "error" in result:
-                body = HTML_BODY.format(price="N/A", sma5="N/A", sma20="N/A",
-                                         cash="N/A", btc="N/A", equity="N/A",
-                                         signal="FEED ERROR", trades_html="")
-                self._send_html(body)
+ body = HTML_BODY.format(price="N/A", sma5="N/A", sma20="N/A",
+ cash="N/A", btc="N/A", equity="N/A",
+ signal="FEED ERROR", trades_html="")
+ self._send_html(body)
             else:
-                trades_html = ""
+ trades_html = ""
                 for t in state.trades:
-                    trades_html += (
+ trades_html += (
                         f"{t['side']} {t['qty']} @ ${t['price']} "
                         f"({t['time']})")
-                body = HTML_BODY.format(
-                    price=result.get("price", "N/A"),
-                    sma5=result.get("sma5") or "N/A",
-                    sma20=result.get("sma20") or "N/A",
-                    cash=result.get("cash", "N/A"),
-                    btc=result.get("btc", "N/A"),
-                    equity=result.get("equity", "N/A"),
-                    signal=result.get("signal", "-"),
-                    trades_html=trades_html)
-                self._send_html(body)
+ body = HTML_BODY.format(
+ price=result.get("price", "N/A"),
+ sma5=result.get("sma5") or "N/A",
+ sma20=result.get("sma20") or "N/A",
+ cash=result.get("cash", "N/A"),
+ btc=result.get("btc", "N/A"),
+ equity=result.get("equity", "N/A"),
+ signal=result.get("signal", "-"),
+ trades_html=trades_html)
+ self._send_html(body)
         else:
-            self.send_response(404)
-            self.end_headers()
+ self.send_response(404)
+ self.end_headers()
 
 
 server = http.server.ThreadingHTTPServer(
