@@ -1,1 +1,133 @@
-import base64;exec(base64.b64decode('aW1wb3J0IGh0dHAuc2VydmVyLGpzb24sb3MsdXJsbGliLnJlcXVlc3QsdGhyZWFkaW5nClBPUlQ9aW50KG9zLmVudmlyb24uZ2V0KCJQT1JUIiwiMTAwMDAiKSk7IGNhc2g9MTAuMDsgYnRjPTAuMDsgdHJhZGVzPVtdOyBwcmV2PU5vbmUKZGVmIGZldGNoKHUpOgogICAgd2l0aCB1cmxsaWIucmVxdWVzdC51cmxvcGVuKHUsdGltZW91dD04KSBhcyByOiByZXR1cm4ganNvbi5sb2FkcyhyLnJlYWQoKS5kZWNvZGUoKSkKZGVmIHRpY2soKToKICAgIGdsb2JhbCBjYXNoLGJ0YyxwcmV2LHRyYWRlcwogICAgcD1mbG9hdChmZXRjaCgiaHR0cHM6Ly9hcGkuYmluYW5jZS5jb20vYXBpL3YzL3RpY2tlci9wcmljZT9zeW1ib2w9QlRDVVNEVCIpWyJwcmljZSJdKQogICAgaz1mZXRjaCgiaHR0cHM6Ly9hcGkuYmluYW5jZS5jb20vYXBpL3YzL2tsaW5lcz9zeW1ib2w9QlRDVVNEVCZpbnRlcnZhbD0xbSZsaW1pdD0yNSIpWzotMV0KICAgIGM9W2Zsb2F0KHhbNF0pIGZvciB4IGluIGtdCiAgICBpZiBsZW4oYyk8MjA6IHJhaXNlIFZhbHVlRXJyb3IoIk5vdCBlbm91Z2ggY2FuZGxlcyIpCiAgICBhPXN1bShjWy01Ol0pLzU7IGI9c3VtKGNbLTIwOl0pLzIwOyBzaWc9IldBSVQiOyBjcm9zcz1hPmIKICAgIGlmIHByZXYgaXMgbm90IE5vbmUgYW5kIHByZXYgaXMgRmFsc2UgYW5kIGNyb3NzIGFuZCBidGM9PTAgYW5kIGNhc2g+MToKICAgICAgICBzcGVuZD1jYXNoKjAuOTsgZmVlPXNwZW5kKjAuMDAxOyBxdHk9KHNwZW5kLWZlZSkvcDsgY2FzaC09c3BlbmQ7IGJ0Yys9cXR5CiAgICAgICAgdHJhZGVzLmFwcGVuZCh7InNpZGUiOiJCVVkiLCJwcmljZSI6cCwicXR5IjpxdHksImZlZSI6ZmVlfSk7IHNpZz0iUEFQRVIgQlVZIgogICAgZWxpZiBwcmV2IGlzIG5vdCBOb25lIGFuZCBwcmV2IGlzIFRydWUgYW5kIG5vdCBjcm9zcyBhbmQgYnRjPjA6CiAgICAgICAgZ3Jvc3M9YnRjKnA7IGZlZT1ncm9zcyowLjAwMTsgY2FzaCs9Z3Jvc3MtZmVlCiAgICAgICAgdHJhZGVzLmFwcGVuZCh7InNpZGUiOiJTRUxMIiwicHJpY2UiOnAsInF0eSI6YnRjLCJmZWUiOmZlZX0pOyBidGM9MDsgc2lnPSJQQVBFUiBTRUxMIgogICAgcHJldj1jcm9zcwogICAgcmV0dXJuIHsicHJpY2UiOnAsImNhc2giOnJvdW5kKGNhc2gsNCksImJ0YyI6cm91bmQoYnRjLDgpLCJlcXVpdHkiOnJvdW5kKGNhc2grYnRjKnAsNCksInJldHVybl9wY3QiOnJvdW5kKCgoY2FzaCtidGMqcCkvMTAtMSkqMTAwLDMpLCJzbWE1Ijpyb3VuZChhLDIpLCJzbWEyMCI6cm91bmQoYiwyKSwic2lnbmFsIjpzaWcsInRyYWRlcyI6dHJhZGVzWy0xMDpdLCJtb2RlIjoiUEFQRVIgT05MWSJ9CmNsYXNzIEgoaHR0cC5zZXJ2ZXIuQmFzZUhUVFBSZXF1ZXN0SGFuZGxlcik6CiAgICBkZWYgbG9nX21lc3NhZ2Uoc2VsZiwqYSk6IHBhc3MKICAgIGRlZiBzZW5kKHNlbGYsY29kZSxvYmosdHlwPSJhcHBsaWNhdGlvbi9qc29uIik6CiAgICAgICAgYm9keT1vYmogaWYgaXNpbnN0YW5jZShvYmosYnl0ZXMpIGVsc2UgKG9iai5lbmNvZGUoKSBpZiBpc2luc3RhbmNlKG9iaixzdHIpIGVsc2UganNvbi5kdW1wcyhvYmopLmVuY29kZSgpKQogICAgICAgIHNlbGYuc2VuZF9yZXNwb25zZShjb2RlKTsgc2VsZi5zZW5kX2hlYWRlcigiQ29udGVudC1UeXBlIix0eXApOyBzZWxmLnNlbmRfaGVhZGVyKCJDb250ZW50LUxlbmd0aCIsc3RyKGxlbihib2R5KSkpOyBzZWxmLmVuZF9oZWFkZXJzKCk7IHNlbGYud2ZpbGUud3JpdGUoYm9keSkKICAgIGRlZiBkb19HRVQoc2VsZik6CiAgICAgICAgcGF0aD1zZWxmLnBhdGguc3BsaXQoIj8iKVswXQogICAgICAgIGlmIHBhdGg9PSIvaGVhbHRoIjogcmV0dXJuIHNlbGYuc2VuZCgyMDAseyJzdGF0dXMiOiJvayIsIm1vZGUiOiJwYXBlciJ9KQogICAgICAgIGlmIHBhdGg9PSIvYXBpL3RpY2siOgogICAgICAgICAgICB0cnk6IHJldHVybiBzZWxmLnNlbmQoMjAwLHRpY2soKSkKICAgICAgICAgICAgZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOiByZXR1cm4gc2VsZi5zZW5kKDUwMix7ImVycm9yIjoiTWFya2V0IGRhdGEgdW5hdmFpbGFibGUiLCJkZXRhaWwiOnN0cihlKSwibW9kZSI6InBhcGVyIn0pCiAgICAgICAgaWYgcGF0aD09Ii8iOiByZXR1cm4gc2VsZi5zZW5kKDIwMCwiPCFkb2N0eXBlIGh0bWw+PGh0bWw+PGhlYWQ+PG1ldGEgbmFtZT0ndmlld3BvcnQnIGNvbnRlbnQ9J3dpZHRoPWRldmljZS13aWR0aCxpbml0aWFsLXNjYWxlPTEnPjx0aXRsZT5CVEMgUGFwZXIgQWdlbnQ8L3RpdGxlPjxzdHlsZT5ib2R5e2ZvbnQ6MTZweCBzeXN0ZW0tdWk7YmFja2dyb3VuZDojMGIxMDIwO2NvbG9yOiNlZGYyZmY7bWF4LXdpZHRoOjc2MHB4O21hcmdpbjozMHB4IGF1dG87cGFkZGluZzoxOHB4fS5jYXJke2JhY2tncm91bmQ6IzE3MjIzYjtwYWRkaW5nOjE4cHg7Ym9yZGVyLXJhZGl1czoxNHB4O21hcmdpbjoxMnB4IDB9YnV0dG9ue3BhZGRpbmc6MTJweDtib3JkZXI6MDtib3JkZXItcmFkaXVzOjlweDtiYWNrZ3JvdW5kOiM3Y2U3YzY7Zm9udC13ZWlnaHQ6Ym9sZH08L3N0eWxlPjwvaGVhZD48Ym9keT48aDE+Qml0Y29pbiBQYXBlciBBZ2VudDwvaDE+PGIgc3R5bGU9J2NvbG9yOiM3Y2U3YzYnPlBBUEVSIE1PREUgT05MWSAtIE5PIFJFQUwgT1JERVJTPC9iPjxwPlZpcnR1YWwgc3RhcnRpbmcgYmFsYW5jZTogJDEwIC0gTm8gbGV2ZXJhZ2UgLSBTaW11bGF0ZWQgMC4xJSBmZWVzPC9wPjxkaXYgY2xhc3M9J2NhcmQnIGlkPSdkJz5Mb2FkaW5nIHB1YmxpYyBCVEMvVVNEVCBtYXJrZXQgZGF0YS4uLjwvZGl2PjxidXR0b24gb25jbGljaz0nbG9hZCgpJz5SZWZyZXNoIC8gZXZhbHVhdGU8L2J1dHRvbj48cCBpZD0ndCc+PC9wPjxzY3JpcHQ+YXN5bmMgZnVuY3Rpb24gbG9hZCgpe3RyeXtsZXQgcj1hd2FpdCBmZXRjaCgnL2FwaS90aWNrJyk7bGV0IGQ9YXdhaXQgci5qc29uKCk7ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2QnKS5pbm5lckhUTUw9J0JUQy9VU0RUOiAkJysoZC5wcmljZXx8Jy0tJykrJzxicj5FcXVpdHk6ICQnKyhkLmVxdWl0eXx8Jy0tJykrJzxicj5DYXNoOiAkJysoZC5jYXNofHwnLS0nKSsnPGJyPkJUQyBoZWxkOiAnKyhkLmJ0Y3x8MCkrJzxicj41IFNNQTogJysoZC5zbWE1fHwnLS0nKSsnPGJyPjIwIFNNQTogJysoZC5zbWEyMHx8Jy0tJykrJzxicj5EZWNpc2lvbjogJysoZC5zaWduYWx8fGQuZXJyb3IpKyc8YnI+UmV0dXJuOiAnKyhkLnJldHVybl9wY3R8fDApKyclJztkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgndCcpLnRleHRDb250ZW50PWQuZXJyb3J8fCcnfWNhdGNoKGUpe2RvY3VtZW50LmdldEVsZW1lbnRCeUlkKCd0JykudGV4dENvbnRlbnQ9ZS5tZXNzYWdlfX1sb2FkKCk7c2V0SW50ZXJ2YWwobG9hZCw2MDAwMCk8L3NjcmlwdD48L2JvZHk+PC9odG1sPiIsInRleHQvaHRtbCIpCiAgICAgICAgcmV0dXJuIHNlbGYuc2VuZCg0MDQseyJlcnJvciI6Ik5vdCBmb3VuZCJ9KQpodHRwLnNlcnZlci5UaHJlYWRpbmdIVFRQU2VydmVyKCgiMC4wLjAuMCIsUE9SVCksSCkuc2VydmVfZm9yZXZlcigpCg=='))
+"""Bitcoin paper trading agent with analysis engine. Pure Python, no external frameworks."""
+
+import http.server
+import json
+import os
+import sys
+import urllib.request
+import threading
+import base64
+from pathlib import Path
+
+PORT = int(os.environ.get("PORT", "10000"))
+
+# Add parent directory to path so engine module is importable
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from engine import PaperTrader, analyze
+
+_trader = PaperTrader(starting_cash=10.0, fee_rate=0.001)
+_last_analysis = None
+
+
+def fetch_json(url, timeout=8):
+    """Fetch and parse JSON from a URL."""
+    with urllib.request.urlopen(url, timeout=timeout) as resp:
+        return json.loads(resp.read().decode())
+
+
+def get_tick_data():
+    """Fetch current price and recent candles from Binance.
+
+    Raises exceptions on any market-data failure.
+    """
+    price_data = fetch_json(
+        "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
+    )
+    price = float(price_data["price"])
+
+    candles = fetch_json(
+        "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=60"
+    )
+
+    # Parse klines: [open_time, open, high, low, close, volume, ...]
+    parsed = []
+    for c in candles:
+        parsed.append((
+            float(c[1]),   # open
+            float(c[2]),   # high
+            float(c[3]),   # low
+            float(c[4]),   # close
+            float(c[5]),   # volume
+        ))
+
+    return price, parsed
+
+
+def run_tick():
+    """Run a single analysis + paper-trading tick."""
+    global _last_analysis
+    try:
+        price, candles = get_tick_data()
+    except Exception as e:
+        _last_analysis = {
+            "error": "Market data unavailable",
+            "detail": str(e),
+            "mode": "PAPER ONLY",
+        }
+        return
+
+    if len(candles) >= 50:
+        analysis = analyze(candles)
+        if analysis is not None:
+            result = _trader.tick(candles)
+            _last_analysis = result
+            return
+
+    # Fallback: return last known analysis or a minimal response
+    if _last_analysis is None:
+        _last_analysis = {"error": "Not enough candles", "mode": "PAPER ONLY"}
+
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    """Simple HTTP handler for the paper-trading agent API."""
+
+    def log_message(self, *args):
+        pass  # Suppress default logging
+
+    def send_json(self, code, obj):
+        """Send a JSON response."""
+        body = json.dumps(obj).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        path = self.path.split("?")[0]
+
+        if path == "/health":
+            return self.send_json(200, {"status": "ok", "mode": "paper"})
+
+        if path == "/api/tick":
+            try:
+                run_tick()
+                if _last_analysis is not None:
+                    return self.send_json(200, _last_analysis)
+                else:
+                    return self.send_json(200, {"error": "No data yet", "mode": "PAPER ONLY"})
+            except Exception as e:
+                return self.send_json(502, {
+                    "error": "Market data unavailable",
+                    "detail": str(e),
+                    "mode": "paper",
+                })
+
+        if path == "/":
+            html = """\
+    "html": True  # HTML content below
+"""
+            html_page = """\
+"""
+            return self.send_json(404, {"error": "Not found"})
+
+
+def main():
+    """Start the HTTP server."""
+    server = http.server.ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
+    print(f"Paper agent listening on port {PORT}")
+    server.serve_forever()
+
+
+if __name__ == "__main__":
+    main()
